@@ -8,7 +8,6 @@
 # - maybe move more stuff into config
 # - themes!
 # - better option menu
-# - quit option
 
 import json
 import os
@@ -221,6 +220,7 @@ class SoundboardScreen(textual.screen.Screen):
     """Class for the soundboard screen."""
     TITLE = "Dionysus - Soundboard"
     BINDINGS = [
+        ("q", "quit()", Text.translatable("soundboard.footer.quit")),
         ("h", "switch_screen('help')",
          Text.translatable("soundboard.footer.open")),
         ("t", "toggle_text()", Text.translatable("soundboard.footer.toggle")),
@@ -267,6 +267,7 @@ class HelpScreen(textual.screen.Screen):
     """Class for the help screen."""
     TITLE = "Dionysus - Help"
     BINDINGS = [
+        ("q", "quit()", Text.translatable("soundboard.footer.quit")),
         ("h", "switch_screen('soundboard')",
          Text.translatable("help.footer.close"))
     ]

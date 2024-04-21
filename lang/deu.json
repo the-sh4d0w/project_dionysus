@@ -1,4 +1,5 @@
 {
+    "soundboard.footer.quit": "Beenden",
     "soundboard.footer.open": "Hilfe öffnen",
     "soundboard.footer.toggle": "Text umschalten",
     "soundboard.footer.reload": "Konfiguration und Audio neu laden",
@@ -13,6 +14,7 @@
     "help.sound_text": "Klick einfach auf die Knöpfe.",
     "help.json_question": "Ich verstehe die Konfigurationsdatei nicht.",
     "help.json_text": "https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON",
+    "help.footer.quit": "Beenden",
     "help.footer.close": "Hilfe schließen",
     "language.title": "Sprache wählen - Programm zum Anwenden neu starten",
     "notification.reload.msg": "Konfiguration und Audio wurde neu geladen",

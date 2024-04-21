@@ -1,4 +1,5 @@
 {
+    "soundboard.footer.quit": "Quit",
     "soundboard.footer.open": "Open help",
     "soundboard.footer.toggle": "Toggle text",
     "soundboard.footer.reload": "Reload config and audio",
@@ -13,6 +14,7 @@
     "help.sound_text": "Just click on the buttons.",
     "help.json_question": "I don't understand the config file.",
     "help.json_text": "https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON",
+    "help.footer.quit": "Quit",
     "help.footer.close": "Close help",
     "language.title": "Choose language - restart program to apply",
     "notification.reload.msg": "Reloaded config and all sound effects",
