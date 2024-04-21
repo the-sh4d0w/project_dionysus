@@ -3,13 +3,12 @@
 # if something seems illogical it's probably the only way I could get it to work
 
 # TODO:
-# - add deu translation
 # - fix text being cut off
 # - third text display option?
-# - add more type hints
 # - maybe move more stuff into config
-# - text on hover for buttons?
-# - themes! (and better option menu)
+# - themes!
+# - better option menu
+# - quit option
 
 import json
 import os
@@ -77,7 +76,11 @@ def callback(indata: numpy.ndarray, outdata: numpy.ndarray,
 
 
 def load_config() -> dict[str, typing.Any]:
-    """Load the config from the config file."""
+    """Load the config from the config file.
+
+    Returns:
+        The config as a dict.
+    """
     if os.path.isfile(CONFIG_PATH):
         with open(file=CONFIG_PATH, mode="r", encoding="utf-8") as file:
             return json.load(file)
@@ -97,9 +100,9 @@ def load_language(lang_code: str) -> dict[str, str]:
     Raises:
         NoLanguageError: if no language file can be found.
     """
-    if os.path.isfile(f"lang/{lang_code}.json"):
-        with open(file=f"lang/{lang_code}.json", mode="r", encoding="utf-8") \
-                as file:
+    if os.path.isfile(f"{LANG_PATH}{lang_code}.json"):
+        with open(file=f"{LANG_PATH}{lang_code}.json", mode="r",
+                  encoding="utf-8") as file:
             return json.load(file)
     raise FileNotFoundError("the specified language does not exist")
 
@@ -116,7 +119,6 @@ class Text:
             - code: ISO 639-2 code of the language to load.
         """
         Text.lang_map = load_language(code)
-        Text.lang_code = code
 
     @staticmethod
     def translatable(key: str, **format_args: typing.Any) -> str:
@@ -161,13 +163,13 @@ class SoundButton(textual.widgets.Button):
         self.file = file
         self.text = os.path.basename(file).split(".")[0]
         self.emoji = STANDARD_EMOJI
-        file = os.path.basename(file)
-        if self.app.config["sounds"].get(file):
-            if self.app.config["sounds"][file].get("text"):
-                self.text = self.app.config["sounds"][file]["text"]
+        file_name = os.path.basename(file)
+        if self.app.config["sounds"].get(file_name):
+            if self.app.config["sounds"][file_name].get("text"):
+                self.text = self.app.config["sounds"][file_name]["text"]
             textual.log(self.text)
-            if self.app.config["sounds"][file].get("emoji"):
-                self.emoji = self.app.config["sounds"][file]["emoji"]
+            if self.app.config["sounds"][file_name].get("emoji"):
+                self.emoji = self.app.config["sounds"][file_name]["emoji"]
         super().__init__(label=f"{self.emoji} {self.text}",
                          classes="sound-button")
         self.tooltip = self.text
