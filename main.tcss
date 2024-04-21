@@ -22,6 +22,9 @@
 
 .title {
     text-style: reverse;
+    color: $accent;
+    background: white;
+    width: auto;
 }
 
 .text {

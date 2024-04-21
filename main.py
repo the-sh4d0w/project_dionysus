@@ -6,7 +6,7 @@
 # - fix text being cut off
 # - third text display option?
 # - maybe move more stuff into config
-# - themes!
+# - themes! -> color selction; theme selection
 # - better option menu
 
 import json
