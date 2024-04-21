@@ -4,7 +4,6 @@
 
 # TODO:
 # - fix text being cut off
-# - third text display option?
 # - maybe move more stuff into config
 # - themes! -> color selction; theme selection
 # - better option menu
@@ -248,9 +247,12 @@ class SoundboardScreen(textual.screen.Screen):
             if str(button.label) == button.emoji:
                 container.styles.grid_size_columns = 5
                 button.label = f"{button.emoji} {button.text}"
-            else:
+            elif str(button.label) == button.text:
                 container.styles.grid_size_columns = 10
                 button.label = button.emoji
+            else:
+                container.styles.grid_size_columns = 5
+                button.label = button.text
 
     def action_reload(self) -> None:
         """Reload the config and sound buttons."""
