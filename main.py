@@ -3,10 +3,17 @@
 # if something seems illogical it's probably the only way I could get it to work
 
 # TODO:
-# - fix text being cut off
+# - fix text being cut off (button and help)
 # - maybe move more stuff into config
 # - themes! -> color selction; theme selection
-# - better option menu
+# - better options menu
+# -> language
+# -> theme/colors
+# -> file/folder locations?
+# -> select input/output device
+# -> default emoji
+# - maybe reloading text without restart (destroy screen?)
+# - use os.path to handle file paths
 
 import json
 import os
@@ -27,6 +34,7 @@ import textual.widgets
 AUDIO_PATH = "audio/"
 CONFIG_PATH = "config.json"
 LANG_PATH = "lang/"
+STYLE_PATH = "styles/"
 DEVICE_NAME = "CABLE Input MME"  # somehow matches correct device
 FILE_TYPES = ("mp3", "wav", "ogg")
 STANDARD_EMOJI = "🔊"
@@ -296,7 +304,7 @@ class HelpScreen(textual.screen.Screen):
 
 class SoundboardApp(textual.app.App):
     """Class for the app."""
-    CSS_PATH = "main.tcss"
+    CSS_PATH = f"{STYLE_PATH}classic.tcss"
     TITLE = "Dionysus"
 
     def __init__(self, local_queue: queue.Queue, cable_queue: queue.Queue,
