@@ -1,5 +1,23 @@
 {
     "language": "eng",
+    "themes": {
+        "classic": {
+            "primary": "#0178D4",
+            "secondary": "#FFA62B"
+        },
+        "blue": {
+            "primary": "blue",
+            "secondary": "#FFA62B"
+        },
+        "green": {
+            "primary": "green",
+            "secondary": "#FFA62B"
+        },
+        "red": {
+            "primary": "red",
+            "secondary": "#FFA62B"
+        }
+    },
     "sounds": {
         "die_gruenen.mp3": {
             "text": "Die Grünen!",

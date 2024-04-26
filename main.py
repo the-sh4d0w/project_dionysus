@@ -26,15 +26,16 @@ import sounddevice
 import soundfile
 import textual
 import textual.app
+import textual.color
 import textual.containers
 import textual.css.query
+import textual.css.stylesheet
 import textual.screen
 import textual.widgets
 
 AUDIO_PATH = "audio/"
 CONFIG_PATH = "config.json"
 LANG_PATH = "lang/"
-STYLE_PATH = "styles/"
 DEVICE_NAME = "CABLE Input MME"  # somehow matches correct device
 FILE_TYPES = ("mp3", "wav", "ogg")
 STANDARD_EMOJI = "🔊"
@@ -304,7 +305,7 @@ class HelpScreen(textual.screen.Screen):
 
 class SoundboardApp(textual.app.App):
     """Class for the app."""
-    CSS_PATH = f"{STYLE_PATH}classic.tcss"
+    CSS_PATH = "base.tcss"
     TITLE = "Dionysus"
 
     def __init__(self, local_queue: queue.Queue, cable_queue: queue.Queue,
@@ -318,6 +319,8 @@ class SoundboardApp(textual.app.App):
         self.lang = lang
         # load config for the first time
         self.app.config = load_config()
+        # update theme for the first time
+        self.update_theme()
 
     def on_mount(self) -> None:
         """Install screens on mount."""
@@ -335,6 +338,33 @@ class SoundboardApp(textual.app.App):
         self.notify(message=Text.translatable("notification.reload.msg"),
                     title=Text.translatable("notification.reload.title"),
                     severity="information")
+
+    def update_theme(self, name: str = "classic") -> None:
+        """Update the theme.
+
+        Arguments:
+            - name: the theme name.
+        """
+        variables = self.get_css_variables()
+        theme = self.config["themes"][name]
+        primary_color = textual.color.Color.parse(theme["primary"])
+        secondary_color = textual.color.Color.parse(theme["secondary"])
+        variables["theme_primary"] = primary_color.hex
+        variables["theme_secondary"] = secondary_color.hex
+        for i in range(1, 4):
+            # primary
+            variables[f"theme_primary-darken-{i}"] = primary_color.darken(
+                i * 15 / 100).hex
+            variables[f"theme_primary-lighten-{i}"] = primary_color.lighten(
+                i * 15 / 100).hex
+            # secondary
+            variables[f"theme_secondary-darken-{i}"] = secondary_color.darken(
+                i * 15 / 100).hex
+            variables[f"theme_secondary-lighten-{i}"] = secondary_color.lighten(
+                i * 15 / 100).hex
+        self.stylesheet.set_variables(variables)
+        self.stylesheet.reparse()
+        self.stylesheet.update(self.app)
 
 
 if __name__ == "__main__":

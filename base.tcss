@@ -1,0 +1,51 @@
+#buttons {
+    layout: grid;
+    grid-size: 5;
+    grid-columns: 1fr;
+    grid-rows: auto;
+    align: left top;
+}
+
+.sound-button {
+    border: round $theme_primary;
+    width: 100%;
+}
+
+#help {
+    align: center middle;
+}
+
+.entry {
+    width: 90%;
+    margin: 1 0;
+}
+
+.title {
+    background: $theme_primary;
+    width: auto;
+}
+
+.text {
+    width: 80%;
+}
+
+# style header and footer
+Header {
+    background: $theme_primary;
+}
+
+Footer {
+    background: $theme_primary;
+}
+
+Footer > .footer--highlight {
+    background: $theme_primary-darken-1;
+}
+
+Footer > .footer--highlight-key {
+    background: $theme_secondary;
+}
+
+Footer > .footer--key {
+    background: $theme_primary-darken-2;
+}
