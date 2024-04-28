@@ -1,0 +1,29 @@
+[
+    {
+        "name": "classic",
+        "colors": {
+            "classic": {
+                "primary": "#0178D4",
+                "secondary": "#FFA62B"
+            }
+        }
+    },
+    {
+        "name": "simple",
+        "colors": {
+            "blue": {
+                "primary": "#0000FF",
+                "secondary": "#FFA62B",
+                "background": "#FF00FF"
+            },
+            "green": {
+                "primary": "#00FF00",
+                "secondary": "#FFA62B"
+            },
+            "red": {
+                "primary": "#FF0000",
+                "secondary": "#FFA62B"
+            }
+        }
+    }
+]

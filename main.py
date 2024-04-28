@@ -1,22 +1,23 @@
 """Main file for Project Dionysus, a soundboard."""
-# some questionable choices were made in the creation of this program
-# if something seems illogical it's probably the only way I could get it to work
 
 # TODO:
 # - fix text being cut off (button and help)
 # - maybe move more stuff into config
-# - themes! -> color selction; theme selection
+# - themes! -> color selection; theme selection
 # - better options menu
 # -> language
 # -> theme/colors
-# -> file/folder locations?
+# -> file/folder locations? -> multiple audio folders
 # -> select input/output device
 # -> default emoji
 # - maybe reloading text without restart (destroy screen?)
-# - use os.path to handle file paths
+# - use os.path to handle file paths (or pathlib)
+# - translate
+# - structure project
+# - add logging (even if only through textual console)
 
-import json
 import os
+import pathlib
 import threading
 import queue
 import typing
@@ -33,12 +34,10 @@ import textual.css.stylesheet
 import textual.screen
 import textual.widgets
 
-AUDIO_PATH = "audio/"
-CONFIG_PATH = "config.json"
-LANG_PATH = "lang/"
+import util
+
 DEVICE_NAME = "CABLE Input MME"  # somehow matches correct device
-FILE_TYPES = ("mp3", "wav", "ogg")
-STANDARD_EMOJI = "🔊"
+FILE_TYPES = (".mp3", ".wav", ".ogg")
 
 
 class NoCableError(Exception):
@@ -82,66 +81,6 @@ def callback(indata: numpy.ndarray, outdata: numpy.ndarray,
     outdata[:] = indata
 
 
-def load_config() -> dict[str, typing.Any]:
-    """Load the config from the config file.
-
-    Returns:
-        The config as a dict.
-    """
-    if os.path.isfile(CONFIG_PATH):
-        with open(file=CONFIG_PATH, mode="r", encoding="utf-8") as file:
-            return json.load(file)
-    raise FileNotFoundError("the config does not exist")
-
-
-def load_language(lang_code: str) -> dict[str, str]:
-    """Loads the language file for the provided language.
-    Should be a ISO 639-2 code but technically is just the name of a JSON file.
-
-    Arguments:
-        - lang_code: language to load.
-
-    Returns:
-        The text for the language as a dict.
-
-    Raises:
-        NoLanguageError: if no language file can be found.
-    """
-    if os.path.isfile(f"{LANG_PATH}{lang_code}.json"):
-        with open(file=f"{LANG_PATH}{lang_code}.json", mode="r",
-                  encoding="utf-8") as file:
-            return json.load(file)
-    raise FileNotFoundError("the specified language does not exist")
-
-
-class Text:
-    """Class for translatable text."""
-    lang_map: dict[str, str] = load_language(load_config()["language"])
-
-    @staticmethod
-    def set_language(code: str) -> None:
-        """Set the language to use.
-
-        Arguments:
-            - code: ISO 639-2 code of the language to load.
-        """
-        Text.lang_map = load_language(code)
-
-    @staticmethod
-    def translatable(key: str, **format_args: typing.Any) -> str:
-        """Get translated text if available.
-
-        Arguments:
-            - key: key to look for.
-            - **format_args: allows optional arguments for formatting.
-
-        Returns:
-            The text if it exists, key otherwise.
-        """
-        return Text.lang_map[key].format_map(format_args) \
-            if Text.lang_map.get(key) is not None else key
-
-
 class FAQ(textual.containers.Container):
     """Class for FAQ entries."""
 
@@ -160,23 +99,22 @@ class FAQ(textual.containers.Container):
 class SoundButton(textual.widgets.Button):
     """Class for custom sound button."""
 
-    def __init__(self, file: str) -> None:
+    def __init__(self, file: pathlib.Path) -> None:
         """Initialize the button.
 
         Arguments:
-            - file: name of the sound file.
+            - file: path of the sound file.
         """
-        self.app: SoundboardApp
         self.file = file
-        self.text = os.path.basename(file).split(".")[0]
-        self.emoji = STANDARD_EMOJI
-        file_name = os.path.basename(file)
-        if self.app.config["sounds"].get(file_name):
-            if self.app.config["sounds"][file_name].get("text"):
-                self.text = self.app.config["sounds"][file_name]["text"]
+        self.text = file.stem
+        self.emoji = util.Config.config.default_emoji
+        file_name = file.stem + file.suffix
+        if util.Config.config.sounds.get(file_name):
+            if util.Config.config.sounds[file_name].text:
+                self.text = str(util.Config.config.sounds[file_name].text)
             textual.log(self.text)
-            if self.app.config["sounds"][file_name].get("emoji"):
-                self.emoji = self.app.config["sounds"][file_name]["emoji"]
+            if util.Config.config.sounds[file_name].emoji:
+                self.emoji = str(util.Config.config.sounds[file_name].emoji)
         super().__init__(label=f"{self.emoji} {self.text}",
                          classes="sound-button")
         self.tooltip = self.text
@@ -184,6 +122,7 @@ class SoundButton(textual.widgets.Button):
     def press(self) -> None:
         """Do something when button is pressed."""
         try:
+            self.app: SoundboardApp
             data, samplerate = soundfile.read(file=self.file)
             self.app.local_queue.put((data, samplerate))
             self.app.cable_queue.put((data, samplerate))
@@ -196,54 +135,47 @@ class SoundButton(textual.widgets.Button):
                             severity="warning")
 
 
-class LanguageScreen(textual.screen.ModalScreen[str]):
-    """Class for the language selection screen."""
+class ExitScreen(textual.screen.ModalScreen[str]):
+    """Class for the exit modal screen."""
 
     def compose(self) -> textual.app.ComposeResult:
         """Compose the ui."""
-        options: list[tuple[str, str]] = []
-        for file in os.listdir(LANG_PATH):
-            name: str = os.path.basename(file).split(".")[0]
-            options.append((name, name))
-        yield textual.widgets.SelectionList[str](*options)
+        yield textual.containers.Grid(
+            textual.widgets.Label("You need to restart to apply changes.\nDo you want to exit?",
+                                  id="question"),
+            textual.widgets.Button("Quit", id="quit"),
+            textual.widgets.Button("Cancel", id="cancel"),
+            id="dialog"
+        )
 
-    def on_mount(self) -> None:
-        """Change title on mount."""
-        self.query_one(textual.widgets.SelectionList).border_title \
-            = Text.translatable("language.title")
-
-    @textual.on(textual.widgets.SelectionList.SelectedChanged)
-    def choose_language(self) -> None:
-        """Choose a language."""
-        self.app: SoundboardApp
-        lang: str = self.query_one(textual.widgets.SelectionList).selected[0]
-        with open(file=CONFIG_PATH, mode="wb") as file:
-            self.app.config["language"] = lang
-            file.write(json.dumps(self.app.config,
-                       ensure_ascii=False).encode())
-        self.dismiss(lang)
+    def on_button_pressed(self, event: textual.widgets.Button.Pressed) -> None:
+        """Something on button pressed."""
+        if event.button.id == "quit":
+            self.app.exit()
+        else:
+            self.app.pop_screen()
 
 
 class SoundboardScreen(textual.screen.Screen):
     """Class for the soundboard screen."""
     TITLE = "Dionysus - Soundboard"
     BINDINGS = [
-        ("q", "quit()", Text.translatable("soundboard.footer.quit")),
+        ("q", "quit()", util.Text.translatable("soundboard.footer.quit")),
+        ("c", "switch_screen('config')",
+         util.Text.translatable("soundboard.footer.config")),
         ("h", "switch_screen('help')",
-         Text.translatable("soundboard.footer.open")),
-        ("t", "toggle_text()", Text.translatable("soundboard.footer.toggle")),
-        ("r", "reload()", Text.translatable("soundboard.footer.reload")),
-        ("l", "change_language()", Text.translatable("soundboard.footer.lang"))
+         util.Text.translatable("soundboard.footer.open")),
+        ("t", "toggle_text()", util.Text.translatable("soundboard.footer.toggle")),
+        ("r", "reload()", util.Text.translatable("soundboard.footer.reload"))
     ]
 
     def compose(self) -> textual.app.ComposeResult:
         """Compose the ui."""
-        yield textual.widgets.Header(show_clock=True)
+        yield textual.widgets.Header(show_clock=util.Config.config.show_clock)
         with textual.containers.ScrollableContainer(id="buttons"):
-            for entry in os.scandir(AUDIO_PATH):
-                if entry.is_file() and entry.path.split(".")[-1].lower() \
-                        in FILE_TYPES:
-                    yield SoundButton(file=entry.path)
+            for entry in pathlib.Path(util.Config.config.audio_path).iterdir():
+                if entry.is_file() and entry.suffix in FILE_TYPES:
+                    yield SoundButton(file=entry)
         yield textual.widgets.Footer()
 
     def action_toggle_text(self) -> None:
@@ -268,57 +200,108 @@ class SoundboardScreen(textual.screen.Screen):
         self.app: SoundboardApp
         self.app.reload()
 
-    def action_change_language(self) -> None:
-        """Change the language."""
-        self.app: SoundboardApp
-        self.app.push_screen(LanguageScreen(), Text.set_language)
+
+class ConfigScreen(textual.screen.Screen):
+    """Class for the config screen."""
+    # needed because of how select works
+    lang_select = 0
+    theme_selct = 0
+    TITLE = "Dionysus - Config"
+    BINDINGS = [
+        ("q", "quit()", util.Text.translatable("soundboard.footer.quit")),
+        ("c", "switch_screen('soundboard')",
+         util.Text.translatable("config.footer.close"))
+    ]
+
+    def compose(self) -> textual.app.ComposeResult:
+        """Compose the ui."""
+        languages: list[tuple[str, str]] = []
+        # FIXME: use pathlib
+        for file in os.listdir(util.Config.config.language_path):
+            name: str = pathlib.Path(file).stem
+            languages.append((name, name))
+        yield textual.widgets.Header(show_clock=util.Config.config.show_clock)
+        with textual.containers.Vertical():
+            with textual.containers.Horizontal(id="theme", classes="config"):
+                # FIXME: implement this correctly
+                yield textual.widgets.Select([(theme.name, theme.name)
+                                              for theme in util.get_themes().values()],
+                                             allow_blank=False, id="theme_select")
+                yield textual.widgets.Select([("red", 1), ("blue", 1), ("green", 3)],
+                                             allow_blank=False, id="color_select")
+            with textual.containers.Container(id="language", classes="config"):
+                yield textual.widgets.Select(languages, allow_blank=False,
+                                             value=util.Text.lang_code, id="language_select")
+            with textual.containers.Container(classes="config"):
+                yield textual.widgets.Switch(util.Config.config.show_clock)
+        yield textual.widgets.Footer()
+
+    def on_mount(self) -> None:
+        """Add titles on mount."""
+        self.query_one("#theme").border_title = "Theme"
+        self.query_one("#language").border_title = "Language"
+
+    @textual.on(textual.widgets.Select.Changed, "#theme_select")
+    def set_colors(self, event: textual.widgets.Select.Changed) -> None:
+        """Set the correct color choices for a theme."""
+        # FIXME: implement this correctly
+        if ConfigScreen.theme_selct > 0:
+            color_select = typing.cast(
+                textual.widgets.Select, self.query_one("#color_select"))
+            # color_select.set_options(event.select._options)
+        ConfigScreen.theme_selct += 1
+
+    @textual.on(textual.widgets.Select.Changed, "#language_select")
+    def choose_langauge(self, event: textual.widgets.Select.Changed) -> None:
+        """Set the correct color choices for a theme."""
+        # FIXME: implement this correctly
+        lang = str(event.value)
+        if ConfigScreen.lang_select > 0:
+            self.app.push_screen(ExitScreen())
+        ConfigScreen.lang_select += 1
 
 
 class HelpScreen(textual.screen.Screen):
     """Class for the help screen."""
     TITLE = "Dionysus - Help"
     BINDINGS = [
-        ("q", "quit()", Text.translatable("soundboard.footer.quit")),
+        ("q", "quit()", util.Text.translatable("soundboard.footer.quit")),
         ("h", "switch_screen('soundboard')",
-         Text.translatable("help.footer.close"))
+         util.Text.translatable("help.footer.close"))
     ]
 
     def compose(self) -> textual.app.ComposeResult:
         """Compose the ui."""
-        yield textual.widgets.Header(show_clock=True)
+        self.app: SoundboardApp
+        yield textual.widgets.Header(show_clock=util.Config.config.show_clock)
         with textual.containers.Container(id="help"):
-            yield FAQ(title=Text.translatable("help.file_question"),
-                      text=Text.translatable("help.file_text",
-                                             AUDIO_PATH=AUDIO_PATH))
-            yield FAQ(title=Text.translatable("help.icon_question"),
-                      text=Text.translatable("help.icon_text",
-                                             CONFIG_PATH=CONFIG_PATH))
-            yield FAQ(title=Text.translatable("help.name_question"),
-                      text=Text.translatable("help.name_text",
-                                             CONFIG_PATH=CONFIG_PATH))
-            yield FAQ(title=Text.translatable("help.sound_question"),
-                      text=Text.translatable("help.sound_text"))
-            yield FAQ(title=Text.translatable("help.json_question"),
-                      text=Text.translatable("help.json_text"))
+            yield FAQ(title=util.Text.translatable("help.file_question"),
+                      text=util.Text.translatable("help.file_text",
+                                                  AUDIO_PATH=util.Config.config.audio_path))
+            yield FAQ(title=util.Text.translatable("help.icon_question"),
+                      text=util.Text.translatable("help.icon_text",
+                                                  CONFIG_PATH=util.Config.config_path))
+            yield FAQ(title=util.Text.translatable("help.name_question"),
+                      text=util.Text.translatable("help.name_text",
+                                                  CONFIG_PATH=util.Config.config_path))
+            yield FAQ(title=util.Text.translatable("help.sound_question"),
+                      text=util.Text.translatable("help.sound_text"))
+            yield FAQ(title=util.Text.translatable("help.json_question"),
+                      text=util.Text.translatable("help.json_text"))
         yield textual.widgets.Footer()
 
 
 class SoundboardApp(textual.app.App):
     """Class for the app."""
-    CSS_PATH = "base.tcss"
+    CSS_PATH = pathlib.Path(util.Config.config.themes_path, "simple.tcss")
     TITLE = "Dionysus"
 
     def __init__(self, local_queue: queue.Queue, cable_queue: queue.Queue,
                  lang: str = "eng") -> None:
         """Initialize the soundboard app."""
         super().__init__()
-        self.app: SoundboardApp
-        self.config: dict[str, typing.Any]
         self.local_queue = local_queue
         self.cable_queue = cable_queue
-        self.lang = lang
-        # load config for the first time
-        self.app.config = load_config()
         # update theme for the first time
         self.update_theme()
 
@@ -326,29 +309,25 @@ class SoundboardApp(textual.app.App):
         """Install screens on mount."""
         self.install_screen(SoundboardScreen(), "soundboard")
         self.install_screen(HelpScreen(), "help")
+        self.install_screen(ConfigScreen(), "config")
         self.push_screen("soundboard")
 
     def reload(self) -> None:
         """Reload the config."""
-        self.app.config = load_config()
         self.pop_screen()
         self.uninstall_screen("soundboard")
         self.install_screen(SoundboardScreen(), "soundboard")
         self.push_screen("soundboard")
-        self.notify(message=Text.translatable("notification.reload.msg"),
-                    title=Text.translatable("notification.reload.title"),
+        self.notify(message=util.Text.translatable("notification.reload.msg"),
+                    title=util.Text.translatable("notification.reload.title"),
                     severity="information")
 
-    def update_theme(self, name: str = "classic") -> None:
-        """Update the theme.
-
-        Arguments:
-            - name: the theme name.
-        """
+    def update_theme(self) -> None:
+        """Update the theme."""
         variables = self.get_css_variables()
-        theme = self.config["themes"][name]
-        primary_color = textual.color.Color.parse(theme["primary"])
-        secondary_color = textual.color.Color.parse(theme["secondary"])
+        color = typing.cast(util.Color, util.Config.config.color)
+        primary_color = textual.color.Color.parse(color.primary)
+        secondary_color = textual.color.Color.parse(color.secondary)
         variables["theme_primary"] = primary_color.hex
         variables["theme_secondary"] = secondary_color.hex
         for i in range(1, 4):
@@ -365,6 +344,12 @@ class SoundboardApp(textual.app.App):
         self.stylesheet.set_variables(variables)
         self.stylesheet.reparse()
         self.stylesheet.update(self.app)
+
+    async def action_quit(self) -> None:
+        """Quit the app and save the config."""
+        # FIXME: writes theme and color to config, shouldn't
+        # util.Config.save()
+        await super().action_quit()
 
 
 if __name__ == "__main__":

@@ -1,23 +1,12 @@
 {
     "language": "eng",
-    "themes": {
-        "classic": {
-            "primary": "#0178D4",
-            "secondary": "#FFA62B"
-        },
-        "blue": {
-            "primary": "blue",
-            "secondary": "#FFA62B"
-        },
-        "green": {
-            "primary": "green",
-            "secondary": "#FFA62B"
-        },
-        "red": {
-            "primary": "red",
-            "secondary": "#FFA62B"
-        }
-    },
+    "theme_name": "classic",
+    "color_name": "classic",
+    "show_clock": true,
+    "default_emoji": "🔊",
+    "audio_path": "audio",
+    "language_path": "lang",
+    "themes_path": "themes",
     "sounds": {
         "die_gruenen.mp3": {
             "text": "Die Grünen!",
