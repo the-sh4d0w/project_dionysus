@@ -1,4 +1,8 @@
 # project_dionysus
+
+| ❗ | This project is currently being reworked. It might not be fully functional. |
+|---|-----------------------------------------------------------------------------|
+
 A simple sounboard in the terminal.
 
 ![The main screen of the program.](images/main_screen.png)
