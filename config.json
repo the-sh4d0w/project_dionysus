@@ -1,7 +1,5 @@
 {
     "language": "eng",
-    "theme_name": "classic",
-    "color_name": "classic",
     "show_clock": true,
     "default_emoji": "🔊",
     "audio_path": "audio",

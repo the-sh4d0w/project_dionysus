@@ -26,41 +26,6 @@ def load_language(lang_code: str) -> dict[str, str]:
     raise FileNotFoundError("the specified language does not exist")
 
 
-def get_themes() -> dict[str, "Theme"]:
-    """Get all themes.
-
-    Returns:
-        A list of all themes.
-    """
-    themes_list = pydantic.TypeAdapter(list[Theme]).validate_json(
-        pathlib.Path(Config.config.themes_path, "themes.json").read_text(encoding="utf-8"))
-    return {theme.name: theme for theme in themes_list}
-
-
-class Color(pydantic.BaseModel):
-    """Class for colors."""
-    name: str
-    primary: str = pydantic.Field(pattern="^#[a-fA-F0-9]{6}$")
-    secondary: str = pydantic.Field(pattern="^#[a-fA-F0-9]{6}$")
-    backgound: str = pydantic.Field(pattern="^#[a-fA-F0-9]{6}$",
-                                    default="#000000")
-
-
-class Theme(pydantic.BaseModel):
-    """Class for themes."""
-    name: str = ""
-    colors: dict[str, Color]
-
-    @pydantic.field_validator("colors", mode="before")
-    @classmethod
-    def dict_to_color(cls, data: dict) -> dict[str, Color]:
-        """Turn a dict into a Color."""
-        if not isinstance(data, dict):
-            return data
-        name, colors = data.popitem()
-        return {name: Color(name=name, **colors)}
-
-
 class Sound(pydantic.BaseModel):
     """Class for sounds."""
     text: typing.Optional[str] = None
@@ -70,28 +35,12 @@ class Sound(pydantic.BaseModel):
 class Configuration(pydantic.BaseModel):
     """Class for storing the configuration."""
     language: str = pydantic.Field(pattern="^[a-z]{3}$")  # close enough
-    theme_name: str = pydantic.Field(exclude=True)
-    color_name: str = pydantic.Field(exclude=True)
     show_clock: bool
     default_emoji: str
     audio_path: pydantic.DirectoryPath
     language_path: pydantic.DirectoryPath
     themes_path: pydantic.DirectoryPath
     sounds: dict[str, Sound]
-
-    @pydantic.computed_field
-    @property
-    def theme(self) -> Theme:
-        """Property for theme."""
-        # FIXME: probably with a field validator
-        return get_themes()["classic"]
-
-    @pydantic.computed_field
-    @property
-    def color(self) -> Color:
-        """Property for color."""
-        # FIXME: probably also with a field validator
-        return get_themes()["classic"].colors["classic"]
 
 
 class Config:

@@ -7,7 +7,7 @@
 }
 
 .sound-button {
-    border: round $theme_primary;
+    border: round $primary;
     width: 100%;
 }
 
@@ -21,7 +21,7 @@
 }
 
 .title {
-    background: $theme_primary;
+    background: $primary;
     width: auto;
 }
 
@@ -30,7 +30,7 @@
 }
 
 .config {
-    border: round $theme_primary;
+    border: round $primary;
     height: auto;
 }
 
@@ -67,21 +67,21 @@ Select {
 
 # style header and footer
 Header {
-    background: $theme_primary;
+    background: $primary;
 }
 
 Footer {
-    background: $theme_primary;
+    # background: $primary;
 }
 
 Footer > .footer--highlight {
-    background: $theme_primary-darken-1;
+    background: $primary-darken-1;
 }
 
 Footer > .footer--highlight-key {
-    background: $theme_secondary;
+    background: $secondary;
 }
 
 Footer > .footer--key {
-    background: $theme_primary-darken-2;
+    background: $primary-darken-2;
 }
