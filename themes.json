@@ -1,0 +1,21 @@
+[
+    {
+        "name": "classic",
+        "description": "The classic color scheme.",
+        "dark": true,
+        "primary": "#0178D4"
+    },
+    {
+        "name": "simple",
+        "dark": true,
+        "primary": "#0178D4",
+        "secondary": "#FFA62B",
+        "warning": "#FFFFFF",
+        "error": "#FFFFFF",
+        "success": "#FFFFFF",
+        "accent": "#FFFFFF",
+        "background": "#FF00FF",
+        "surface": "#FFFFFF",
+        "panel": "#FFFFFF"
+    }
+]

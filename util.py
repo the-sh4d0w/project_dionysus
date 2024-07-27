@@ -5,10 +5,61 @@ import typing
 
 import pydantic
 import pydantic.validators
+import textual.design
+
+CONFIG_PATH = "config.json"
 
 
-def load_language(lang_code: str) -> dict[str, str]:
-    """Loads the language file for the provided language.
+class Colors(pydantic.BaseModel):
+    """Pydantic model to represent the textual ColorSystem."""
+    name: str
+    dark: bool = False
+    primary: str = pydantic.Field(pattern="^#[0-9a-fA-F]{6}$")
+    secondary: str = pydantic.Field(default=None, pattern="^#[0-9a-fA-F]{6}$")
+    warning: str = pydantic.Field(default=None, pattern="^#[0-9a-fA-F]{6}$")
+    error: str = pydantic.Field(default=None, pattern="^#[0-9a-fA-F]{6}$")
+    success: str = pydantic.Field(default=None, pattern="^#[0-9a-fA-F]{6}$")
+    accent: str = pydantic.Field(default=None, pattern="^#[0-9a-fA-F]{6}$")
+    background: str = pydantic.Field(default=None, pattern="^#[0-9a-fA-F]{6}$")
+    surface: str = pydantic.Field(default=None, pattern="^#[0-9a-fA-F]{6}$")
+    panel: str = pydantic.Field(default=None, pattern="^#[0-9a-fA-F]{6}$")
+
+
+class Sound(pydantic.BaseModel):
+    """Class for sounds."""
+    text: typing.Optional[str] = None
+    emoji: typing.Optional[str] = None  # trying to match emojis isn't worth it
+
+
+class Config(pydantic.BaseModel):
+    """Class for storing the configuration."""
+    language: str = pydantic.Field(pattern="^[a-z]{3}$")  # close enough
+    show_clock: bool
+    default_emoji: str
+    audio_path: pydantic.DirectoryPath
+    language_path: pydantic.DirectoryPath
+    styles_path: pydantic.DirectoryPath
+    themes_path: pydantic.FilePath
+    sounds: dict[str, Sound]
+
+    @classmethod
+    def load(cls) -> "Config":
+        """Load the config from file."""
+        return Config.model_validate_json(pathlib.Path(CONFIG_PATH).read_text("utf-8"))
+
+    def save(self) -> None:
+        """Save the config to file."""
+        config_json: str = self.model_dump_json(exclude_defaults=True)
+        pathlib.Path(CONFIG_PATH).write_text(config_json, "utf-8")
+
+
+# maybe?
+CONFIG = Config.load()
+
+
+def load_languages() -> dict[str, dict[str, str]]:
+    """Load the language file for the provided language.
+    TODO: improve
     Should be a ISO 639-2 code but technically is just the name of a JSON file.
 
     Arguments:
@@ -18,64 +69,40 @@ def load_language(lang_code: str) -> dict[str, str]:
         The text for the language as a dict.
 
     Raises:
-        FileNotFoundError: if no language file can be found.
+        FileNotFoundError if no language file can be found.
     """
-    path = pathlib.Path(Config.config.language_path, f"{lang_code}.json")
-    if path.exists():
-        return json.loads(path.read_text(encoding="utf-8"))
-    raise FileNotFoundError("the specified language does not exist")
+    lang_maps: dict[str, dict[str, str]] = {}
+    for file in pathlib.Path(CONFIG.language_path).iterdir():
+        lang_maps[file.name.removesuffix(".json")] = json.loads(
+            file.read_text("utf-8"))
+        # TODO: maybe verify?
+    return lang_maps
 
 
-class Sound(pydantic.BaseModel):
-    """Class for sounds."""
-    text: typing.Optional[str] = None
-    emoji: typing.Optional[str] = None  # trying to match emojis isn't worth it
+def load_themes() -> dict[str, textual.design.ColorSystem]:
+    """Load all themes (textual color systems).
 
-
-class Configuration(pydantic.BaseModel):
-    """Class for storing the configuration."""
-    language: str = pydantic.Field(pattern="^[a-z]{3}$")  # close enough
-    show_clock: bool
-    default_emoji: str
-    audio_path: pydantic.DirectoryPath
-    language_path: pydantic.DirectoryPath
-    themes_path: pydantic.DirectoryPath
-    sounds: dict[str, Sound]
-
-
-class Config:
-    """Class for handling the config."""
-    config_path = pathlib.Path("config.json")
-    config = Configuration.model_validate_json(
-        config_path.read_text(encoding="utf-8"))
-
-    @staticmethod
-    def load() -> None:
-        """Load the config from the file."""
-        Config.config = Configuration.model_validate_json(
-            Config.config_path.read_text(encoding="utf-8"))
-
-    @staticmethod
-    def save() -> None:
-        """Save the config to the file."""
-        Config.config_path.write_text(Config.config.model_dump_json(
-            exclude_defaults=True), encoding="utf-8")
+    Returns:
+        The themes.
+    """
+    # well, it works
+    # TODO: improve
+    results = {}
+    colors: list[dict[str, typing.Any]] = json.loads(
+        pathlib.Path(CONFIG.themes_path).read_text("utf-8"))
+    for color in colors:
+        color_name = color["name"]
+        color.pop("name")
+        # currently not needed
+        color.pop("description", None)
+        color_system = textual.design.ColorSystem(**color)
+        results[color_name] = color_system
+    return results
 
 
 class Text:
     """Class for translatable text."""
-    lang_code: str = Config.config.language
-    lang_map: dict[str, str] = load_language(lang_code)
-
-    @staticmethod
-    def set_language(code: str) -> None:
-        """Set the language to use.
-
-        Arguments:
-            - code: ISO 639-2 code of the language to load.
-        """
-        Text.lang_map = load_language(code)
-        Text.lang_code = code
+    lang_maps: dict[str, dict[str, str]] = load_languages()
 
     @staticmethod
     def translatable(key: str, **format_args: typing.Any) -> str:
@@ -88,5 +115,7 @@ class Text:
         Returns:
             The text if it exists, key otherwise.
         """
-        return Text.lang_map[key].format_map(format_args) \
-            if Text.lang_map.get(key) is not None else key
+        if Text.lang_maps.get(CONFIG.language) is not None \
+                and Text.lang_maps[CONFIG.language].get(key) is not None:
+            return Text.lang_maps[CONFIG.language][key].format_map(format_args)
+        return key

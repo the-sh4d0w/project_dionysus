@@ -19,13 +19,13 @@ class SoundButton(textual.widgets.Button):
         """
         self.file = file
         self.text = file.stem
-        self.emoji = util.Config.config.default_emoji
+        self.emoji = util.CONFIG.default_emoji
         file_name = file.stem + file.suffix
-        if util.Config.config.sounds.get(file_name):
-            if util.Config.config.sounds[file_name].text:
-                self.text = str(util.Config.config.sounds[file_name].text)
-            if util.Config.config.sounds[file_name].emoji:
-                self.emoji = str(util.Config.config.sounds[file_name].emoji)
+        if util.CONFIG.sounds.get(file_name):
+            if util.CONFIG.sounds[file_name].text:
+                self.text = str(util.CONFIG.sounds[file_name].text)
+            if util.CONFIG.sounds[file_name].emoji:
+                self.emoji = str(util.CONFIG.sounds[file_name].emoji)
         super().__init__(label=f"{self.emoji} {self.text}",
                          classes="sound-button")
         self.tooltip = self.text

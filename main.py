@@ -13,7 +13,6 @@
 # - maybe reloading text without restart (destroy screen?)
 # - use os.path to handle file paths (or pathlib)
 # - translate
-# - structure project
 # - add logging (even if only through textual console)
 
 import pathlib
@@ -29,6 +28,7 @@ import textual.color
 import textual.containers
 import textual.css.query
 import textual.css.stylesheet
+import textual.design
 import textual.screen
 import textual.widgets
 
@@ -82,20 +82,22 @@ def callback(indata: numpy.ndarray, outdata: numpy.ndarray,
     """Callback function. The type of time should actually be CData."""
     outdata[:] = indata
 
+# TODO: styles and themes
+
 
 class SoundboardApp(textual.app.App):
     """Class for the app."""
-    CSS_PATH = pathlib.Path(util.Config.config.themes_path, "simple.tcss")
+    CSS_PATH = pathlib.Path(util.CONFIG.styles_path, "classic.tcss")
     TITLE = "Dionysus"
 
-    def __init__(self, local_queue: queue.Queue, cable_queue: queue.Queue,
-                 lang: str = "eng") -> None:
+    theme: str = "classic"
+    themes: dict[str, textual.design.ColorSystem] = util.load_themes()
+
+    def __init__(self, local_queue: queue.Queue, cable_queue: queue.Queue) -> None:
         """Initialize the soundboard app."""
         super().__init__()
-        self.local_queue = local_queue
-        self.cable_queue = cable_queue
-        # update theme for the first time
-        self.update_theme()
+        self.local_queue: queue.Queue = local_queue
+        self.cable_queue: queue.Queue = cable_queue
 
     def on_mount(self) -> None:
         """Install screens on mount."""
@@ -109,6 +111,9 @@ class SoundboardApp(textual.app.App):
         """Reload the config."""
         # FIXME: reload all screens; maybe automatically?
         # I don't need to reinstall, do I; just pop and push, right?
+        # does this work?
+        self.css_path = [str(pathlib.Path(util.CONFIG.themes_path,
+                                          "classic.tcss"))]
         self.pop_screen()
         self.uninstall_screen("soundboard")
         self.install_screen(screens.soundboard.SoundboardScreen(),
@@ -127,6 +132,21 @@ class SoundboardApp(textual.app.App):
         # TODO/FIXME: replace update_theme with get_css_variables
         # IT LITERALLY MENTIONS OVERRIDING get_css_variables TO INTRODUCE \
         # NEW VARIABLES
+
+    def get_css_variables(self) -> dict[str, str]:
+        """Assign the correct theme and get the correct css variables.
+
+        Returns:
+            The css variables.
+        """
+        # inspired by https://github.com/darrenburns/posting/blob/main/src/posting/app.py
+        # TODO: dark/light mode?
+        theme = {}
+        if self.theme:
+            system = self.themes.get(self.theme)
+            if system:
+                theme = system.generate()
+        return {**super().get_css_variables(), **theme}
 
     async def action_quit(self) -> None:
         """Quit the app and save the config."""

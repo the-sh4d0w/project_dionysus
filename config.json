@@ -4,7 +4,8 @@
     "default_emoji": "🔊",
     "audio_path": "audio",
     "language_path": "lang",
-    "themes_path": "themes",
+    "styles_path": "styles",
+    "themes_path": "themes.json",
     "sounds": {
         "die_gruenen.mp3": {
             "text": "Die Grünen!",

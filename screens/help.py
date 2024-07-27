@@ -20,17 +20,17 @@ class HelpScreen(textual.screen.Screen):
 
     def compose(self) -> textual.app.ComposeResult:
         """Compose the ui."""
-        yield textual.widgets.Header(show_clock=util.Config.config.show_clock)
+        yield textual.widgets.Header(show_clock=util.CONFIG.show_clock)
         with textual.containers.Container(id="help"):
             yield widgets.faq.FAQ(title=util.Text.translatable("help.file_question"),
                                   text=util.Text.translatable("help.file_text",
-                                                              AUDIO_PATH=util.Config.config.audio_path))
+                                                              AUDIO_PATH=util.CONFIG.audio_path))
             yield widgets.faq.FAQ(title=util.Text.translatable("help.icon_question"),
                                   text=util.Text.translatable("help.icon_text",
-                                                              CONFIG_PATH=util.Config.config_path))
+                                                              CONFIG_PATH=util.CONFIG_PATH))
             yield widgets.faq.FAQ(title=util.Text.translatable("help.name_question"),
                                   text=util.Text.translatable("help.name_text",
-                                                              CONFIG_PATH=util.Config.config_path))
+                                                              CONFIG_PATH=util.CONFIG_PATH))
             yield widgets.faq.FAQ(title=util.Text.translatable("help.sound_question"),
                                   text=util.Text.translatable("help.sound_text"))
             yield widgets.faq.FAQ(title=util.Text.translatable("help.json_question"),

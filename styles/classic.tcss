@@ -7,8 +7,10 @@
 }
 
 .sound-button {
+    background: $surface;
     border: round $accent;
     width: 100%;
+    height: auto;
 }
 
 #help {
@@ -27,4 +29,18 @@
 
 .text {
     width: 80%;
+}
+
+Footer {
+    background: $accent;
+}
+
+FooterKey {
+    background: $accent;
+    color: white;
+}
+
+.footer-key--key {
+    background: $accent-darken-1;
+    color: white;
 }

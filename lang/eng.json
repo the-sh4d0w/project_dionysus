@@ -1,5 +1,6 @@
 {
     "soundboard.footer.quit": "Quit",
+    "soundboard.footer.config": "Open config",
     "soundboard.footer.open": "Open help",
     "soundboard.footer.toggle": "Toggle text",
     "soundboard.footer.reload": "Reload config and audio",
@@ -8,6 +9,7 @@
     "config.language.title": "Language",
     "config.clock.title": "Show clock",
     "config.emoji.title": "Default emoji",
+    "config.footer.close": "Close config",
     "help.file_question": "How do I add audio files?",
     "help.file_text": "Put your audio files into the '{AUDIO_PATH}' folder.\nThe following file formats are supported: mp3, ogg, wav.",
     "help.icon_question": "How do I change the icons?",

@@ -25,10 +25,10 @@ class ConfigScreen(textual.screen.Screen):
     def compose(self) -> textual.app.ComposeResult:
         """Compose the ui."""
         languages: list[tuple[str, str]] = []
-        for file in pathlib.Path(util.Config.config.language_path).iterdir():
+        for file in pathlib.Path(util.CONFIG.language_path).iterdir():
             name: str = file.stem
             languages.append((name, name))
-        yield textual.widgets.Header(show_clock=util.Config.config.show_clock)
+        yield textual.widgets.Header(show_clock=util.CONFIG.show_clock)
         with textual.containers.Vertical():
             with textual.containers.Horizontal(id="theme", classes="config"):
                 # FIXME: implement this correctly
@@ -38,11 +38,11 @@ class ConfigScreen(textual.screen.Screen):
                                              allow_blank=False, id="color_select")
             with textual.containers.Container(id="language", classes="config"):
                 yield textual.widgets.Select(languages, allow_blank=False,
-                                             value=util.Text.lang_code, id="language_select")
+                                             value=util.CONFIG.language, id="language_select")
             with textual.containers.Container(id="clock", classes="config"):
-                yield textual.widgets.Switch(util.Config.config.show_clock)
+                yield textual.widgets.Switch(util.CONFIG.show_clock)
             with textual.containers.Container(id="emoji", classes="config"):
-                yield textual.widgets.Input(util.Config.config.default_emoji,
+                yield textual.widgets.Input(util.CONFIG.default_emoji,
                                             id="emoji_input")
         yield textual.widgets.Footer()
 
@@ -66,15 +66,14 @@ class ConfigScreen(textual.screen.Screen):
     def choose_langauge(self, event: textual.widgets.Select.Changed) -> None:
         """Set the correct color choices for a theme."""
         # FIXME: implement this correctly
-        util.Config.config.language = str(event.value)
-        util.Text.set_language(util.Config.config.language)
+        util.CONFIG.language = str(event.value)
 
     @textual.on(textual.widgets.Switch.Changed)
     def set_clock(self, event: textual.widgets.Switch.Changed) -> None:
         """Set the show clock value."""
-        util.Config.config.show_clock = event.value
+        util.CONFIG.show_clock = event.value
 
     @textual.on(textual.widgets.Input.Changed, "#emoji_input")
     def choose_emoji(self, event: textual.widgets.Input.Changed) -> None:
         """Choose the default emoji."""
-        util.Config.config.default_emoji = event.value
+        util.CONFIG.default_emoji = event.value

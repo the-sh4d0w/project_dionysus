@@ -7,6 +7,7 @@
 }
 
 .sound-button {
+    background: $surface;
     border: round $primary;
     width: 100%;
 }
