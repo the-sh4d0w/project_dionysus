@@ -6,6 +6,8 @@
     "language_path": "lang",
     "styles_path": "styles",
     "themes_path": "themes.json",
+    "style": "classic",
+    "theme": "classic",
     "sounds": {
         "die_gruenen.mp3": {
             "text": "Die Grünen!",

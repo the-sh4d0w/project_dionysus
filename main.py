@@ -1,7 +1,6 @@
 """Main file for Project Dionysus, a soundboard."""
 
 # TODO:
-# - fix text being cut off (button and help)
 # - maybe move more stuff into config
 # - themes! -> color selection; theme selection
 # - better options menu
@@ -87,10 +86,9 @@ def callback(indata: numpy.ndarray, outdata: numpy.ndarray,
 
 class SoundboardApp(textual.app.App):
     """Class for the app."""
-    CSS_PATH = pathlib.Path(util.CONFIG.styles_path, "classic.tcss")
     TITLE = "Dionysus"
 
-    theme: str = "classic"
+    theme: str = util.CONFIG.theme
     themes: dict[str, textual.design.ColorSystem] = util.load_themes()
 
     def __init__(self, local_queue: queue.Queue, cable_queue: queue.Queue) -> None:
@@ -98,6 +96,8 @@ class SoundboardApp(textual.app.App):
         super().__init__()
         self.local_queue: queue.Queue = local_queue
         self.cable_queue: queue.Queue = cable_queue
+        # set up css path
+        self.css_path = [util.CONFIG.style_path]
 
     def on_mount(self) -> None:
         """Install screens on mount."""
@@ -106,32 +106,6 @@ class SoundboardApp(textual.app.App):
         self.install_screen(screens.help.HelpScreen(), "help")
         self.install_screen(screens.config.ConfigScreen(), "config")
         self.push_screen("soundboard")
-
-    def reload(self) -> None:
-        """Reload the config."""
-        # FIXME: reload all screens; maybe automatically?
-        # I don't need to reinstall, do I; just pop and push, right?
-        # does this work?
-        self.css_path = [str(pathlib.Path(util.CONFIG.themes_path,
-                                          "classic.tcss"))]
-        self.pop_screen()
-        self.uninstall_screen("soundboard")
-        self.install_screen(screens.soundboard.SoundboardScreen(),
-                            "soundboard")
-        self.uninstall_screen("help")
-        self.install_screen(screens.help.HelpScreen(), "help")
-        self.uninstall_screen("config")
-        self.install_screen(screens.config.ConfigScreen(), "config")
-        self.push_screen("soundboard")
-        self.notify(message=util.Text.translatable("notification.reload.msg"),
-                    title=util.Text.translatable("notification.reload.title"),
-                    severity="information")
-
-    def update_theme(self) -> None:
-        """Update the theme."""
-        # TODO/FIXME: replace update_theme with get_css_variables
-        # IT LITERALLY MENTIONS OVERRIDING get_css_variables TO INTRODUCE \
-        # NEW VARIABLES
 
     def get_css_variables(self) -> dict[str, str]:
         """Assign the correct theme and get the correct css variables.

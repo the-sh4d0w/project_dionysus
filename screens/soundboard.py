@@ -57,9 +57,14 @@ class SoundboardScreen(textual.screen.Screen):
                 case 2:
                     container.styles.grid_size_columns = 5
                     button.label = button.text
+            # needed to reload css and correctly change button height
+            button.refresh(layout=True)
 
     def action_reload(self) -> None:
-        """Reload the config and sound buttons."""
-        # FIXME: circular import; can probably easily remove
-        # self.app: SoundboardApp
-        # self.app.reload()
+        """Reload the soundboard screen."""
+        # FIXME: reload all screens; maybe automatically?
+        self.app.pop_screen()
+        self.app.push_screen("soundboard")
+        self.notify(message=util.Text.translatable("notification.reload.msg"),
+                    title=util.Text.translatable("notification.reload.title"),
+                    severity="information")

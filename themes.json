@@ -8,8 +8,8 @@
     {
         "name": "simple",
         "dark": true,
-        "primary": "#0178D4",
-        "secondary": "#FFA62B",
+        "primary": "#FFA62B",
+        "secondary": "#FFFFFF",
         "warning": "#FFFFFF",
         "error": "#FFFFFF",
         "success": "#FFFFFF",

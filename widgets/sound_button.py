@@ -26,7 +26,7 @@ class SoundButton(textual.widgets.Button):
                 self.text = str(util.CONFIG.sounds[file_name].text)
             if util.CONFIG.sounds[file_name].emoji:
                 self.emoji = str(util.CONFIG.sounds[file_name].emoji)
-        super().__init__(label=f"{self.emoji} {self.text}",
+        super().__init__(label=f"{self.emoji}\n{self.text}",
                          classes="sound-button")
         self.tooltip = self.text
 

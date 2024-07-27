@@ -40,7 +40,14 @@ class Config(pydantic.BaseModel):
     language_path: pydantic.DirectoryPath
     styles_path: pydantic.DirectoryPath
     themes_path: pydantic.FilePath
+    theme: str
+    style: str
     sounds: dict[str, Sound]
+
+    @property
+    def style_path(self) -> pathlib.Path:
+        """Style path computated field."""
+        return pathlib.Path(self.styles_path, f"{self.style}.tcss")
 
     @classmethod
     def load(cls) -> "Config":
