@@ -1,9 +1,8 @@
+![Python versions](https://img.shields.io/badge/Python-3.10|3.11|3.12|3.13-blue)
+![OS support](https://img.shields.io/badge/OS-Windows-red)
 ![Soundboard screen with catppuccino-mocha theme](images/dionysus_soundboard_catppuccin-mocha.png)
 
 # Dionysus
-![Python versions](https://img.shields.io/badge/Python-3.10|3.11|3.12|3.13-blue)
-![OS support](https://img.shields.io/badge/OS-Windows-red)
-
 A simple soundboard in the terminal. Add your own sound files and play them through your microphone to annoy your friends in voice chat.
 
 This is a Terminal User Interface (TUI) made with [Textual](https://github.com/textualize/textual/).
@@ -25,7 +24,7 @@ After that just run: `python main.py`
 ![Soundboard screen with gruvbox theme](images/dionysus_soundboard_gruvbox.png)
 ![Soundboard screen with nord theme](images/dionysus_soundboard_nord.png)
 ![Soundboard screen with textual-ansi theme](images/dionysus_soundboard_textual-ansi.png)
-![Soundboard screen with tokyo-night theme](images/dionysus_soundboard_tokyo-night.png)
+![Soundboard screen with dracula theme](images/dionysus_soundboard_dracula.png)
 
 ---
 Note: The audio files included in this repository are not subject to the license.
