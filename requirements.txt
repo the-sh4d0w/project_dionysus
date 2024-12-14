@@ -1,5 +1,5 @@
-numpy
-sounddevice
-soundfile
-textual
-pydantic
+numpy==2.2.0
+pydantic==2.10.3
+sounddevice==0.5.1
+soundfile==0.12.1
+textual==1.0.0
