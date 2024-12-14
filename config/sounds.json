@@ -1,0 +1,27 @@
+{
+    "die_gruenen.mp3": {
+        "text": "Die Grünen!",
+        "emoji": "🌻"
+    },
+    "knock.mp3": {
+        "text": "Knock",
+        "emoji": "🚪"
+    },
+    "creeper.mp3": {
+        "text": "Creeper",
+        "emoji": "🔥"
+    },
+    "betrayal.ogg": {
+        "emoji": "❌"
+    },
+    "obi_wan_hello_there.mp3": {
+        "emoji": "⚔"
+    },
+    "error.mp3": {
+        "emoji": "🚧"
+    },
+    "ta_da.mp3": {
+        "text": "Ta da!",
+        "emoji": "✨"
+    }
+}

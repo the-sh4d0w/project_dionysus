@@ -1,0 +1,23 @@
+{
+    "soundboard.footer.quit": "Beenden",
+    "soundboard.footer.settings": "Einstellungen öffnen",
+    "soundboard.footer.help": "Hilfe öffnen",
+    "soundboard.footer.toggle": "Text umschalten",
+    "config.theme.title": "Thema",
+    "config.language.title": "Sprache",
+    "config.clock.title": "Uhr anzeigen",
+    "config.emoji.title": "Standard Emoji",
+    "config.footer.close": "Einstellungen schließen",
+    "help.file_question": "Wie füge ich Audiodateien hinzu?",
+    "help.file_text": "Lege Deine Audiodateien in den Ordner '{AUDIO_PATH}'.\nDie folgenden Dateiformate werden unterstützt : mp3, ogg, wav.",
+    "help.icon_question": "Wie ändere ich die Symbole?",
+    "help.icon_text": "Füge einen Eintrag in '{SOUNDS_PATH}' hinzu.\nWenn Deine Datei 'example.mp3' heißt, würde der Eintrag so aussehen:\n\"example.mp3\": {{\"emoji\": \"💎\"}}",
+    "help.name_question": "Wie ändere ich die Namen?",
+    "help.name_text": "Füge einen Eintrag in '{SOUNDS_PATH}' hinzu.\nWenn Deine Datei 'example.mp3' heißt, würde der Eintrag so aussehen:\n\"example.mp3\": {{\"name\": \"Beispielname\"}}",
+    "help.sound_question": "Wie spiele ich Geräusche ab?",
+    "help.sound_text": "Klick einfach auf die Knöpfe.",
+    "help.json_question": "Ich verstehe die Konfigurationsdatei nicht.",
+    "help.json_text": "https://developer.mozilla.org/de/docs/Learn/JavaScript/Objects/JSON",
+    "help.footer.close": "Hilfe schließen",
+    "notify.warning": "Etwas ist schiefgelaufen"
+}

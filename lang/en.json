@@ -1,0 +1,23 @@
+{
+    "soundboard.footer.quit": "Quit",
+    "soundboard.footer.settings": "Open settings",
+    "soundboard.footer.help": "Open help",
+    "soundboard.footer.toggle": "Toggle text",
+    "config.theme.title": "Theme",
+    "config.language.title": "Language",
+    "config.clock.title": "Show clock",
+    "config.emoji.title": "Default emoji",
+    "config.footer.close": "Close config",
+    "help.file_question": "How do I add audio files?",
+    "help.file_text": "Put your audio files into the '{AUDIO_PATH}' folder.\nThe following file formats are supported: mp3, ogg, wav.",
+    "help.icon_question": "How do I change the icons?",
+    "help.icon_text": "Add an entry in '{SOUNDS_PATH}'.\nIf your file is named 'example.mp3' the entry would look like this:\n\"example.mp3\": {{\"emoji\": \"💎\"}}",
+    "help.name_question": "How do I change the names?",
+    "help.name_text": "Add an entry in '{SOUNDS_PATH}'.\nIf your file is named 'example.mp3' the entry would look like this:\n\"example.mp3\": {{\"name\": \"Example name\"}}",
+    "help.sound_question": "How do I play sounds?",
+    "help.sound_text": "Just click on the buttons.",
+    "help.json_question": "I don't understand the sounds file.",
+    "help.json_text": "https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON",
+    "help.footer.close": "Close help",
+    "notify.warning": "Something went wrong"
+}

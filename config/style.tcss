@@ -1,0 +1,62 @@
+Button {
+    width: 100%;
+}
+
+Button:focus{
+    text-style: none;
+}
+
+Header {
+    color: $primary;
+}
+
+# soundboard screen
+#buttons {
+    layout: grid;
+    grid-size: 5;
+    grid-columns: 1fr;
+    grid-rows: auto;
+    align: left top;
+}
+
+.sound-button {
+    background: transparent;
+    border: round $primary;
+    width: 100%;
+}
+
+# help screen
+#help {
+    margin: 2;
+}
+
+.faq {
+    height: auto;
+    margin-bottom: 1;
+}
+
+.title {
+    color: $text;
+    background: $primary;
+    width: auto;
+}
+
+.text {
+    margin-left: 1;
+}
+
+# config screen
+#config {
+    margin: 1;
+}
+
+.config_label {
+    width: 50%;
+    margin-top: 1;
+    height: auto;
+}
+
+.config_option {
+    background: transparent;
+    max-width: 50%;
+}

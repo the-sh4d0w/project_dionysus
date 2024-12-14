@@ -1,20 +1,5 @@
 """Main file for Project Dionysus, a soundboard."""
 
-# TODO:
-# - maybe move more stuff into config
-# - themes! -> color selection; theme selection
-# - better options menu
-# -> language
-# -> theme/colors
-# -> file/folder locations? -> multiple audio folders
-# -> select input/output device
-# -> default emoji
-# - maybe reloading text without restart (destroy screen?)
-# - use os.path to handle file paths (or pathlib)
-# - translate
-# - add logging (even if only through textual console)
-
-import pathlib
 import threading
 import queue
 import typing
@@ -28,14 +13,13 @@ import textual.containers
 import textual.css.query
 import textual.css.stylesheet
 import textual.design
+import textual.reactive
 import textual.screen
+import textual.signal
 import textual.widgets
 
-import screens.config
-import screens.exit
-import screens.help
 import screens.soundboard
-import util
+import utils.config
 
 DEVICE_NAME = "CABLE Input MME"  # somehow matches correct device
 FILE_TYPES = (".mp3", ".wav", ".ogg")
@@ -81,53 +65,23 @@ def callback(indata: numpy.ndarray, outdata: numpy.ndarray,
     """Callback function. The type of time should actually be CData."""
     outdata[:] = indata
 
-# TODO: styles and themes
-
 
 class SoundboardApp(textual.app.App):
     """Class for the app."""
+    ENABLE_COMMAND_PALETTE = False
     TITLE = "Dionysus"
-
-    theme: str = util.CONFIG.theme
-    themes: dict[str, textual.design.ColorSystem] = util.load_themes()
+    CSS_PATH = "./config/style.tcss"
 
     def __init__(self, local_queue: queue.Queue, cable_queue: queue.Queue) -> None:
         """Initialize the soundboard app."""
         super().__init__()
+        self.theme = utils.config.CONFIG.theme
         self.local_queue: queue.Queue = local_queue
         self.cable_queue: queue.Queue = cable_queue
-        # set up css path
-        self.css_path = [util.CONFIG.style_path]
 
     def on_mount(self) -> None:
-        """Install screens on mount."""
-        self.install_screen(
-            screens.soundboard.SoundboardScreen(), "soundboard")
-        self.install_screen(screens.help.HelpScreen(), "help")
-        self.install_screen(screens.config.ConfigScreen(), "config")
-        self.push_screen("soundboard")
-
-    def get_css_variables(self) -> dict[str, str]:
-        """Assign the correct theme and get the correct css variables.
-
-        Returns:
-            The css variables.
-        """
-        # inspired by https://github.com/darrenburns/posting/blob/main/src/posting/app.py
-        # TODO: dark/light mode?
-        theme = {}
-        if self.theme:
-            system = self.themes.get(self.theme)
-            if system:
-                theme = system.generate()
-        return {**super().get_css_variables(), **theme}
-
-    async def action_quit(self) -> None:
-        """Quit the app and save the config."""
-        # FIXME: writes theme and color to config, shouldn't
-        # util.Config.save()
-        await super().action_quit()
-        # can't I just exit?
+        """Do stuff on mount."""
+        self.push_screen(screens.soundboard.SoundboardScreen())
 
 
 if __name__ == "__main__":
@@ -138,7 +92,7 @@ if __name__ == "__main__":
                      args=(local_audio_queue, default_out)).start()
     threading.Thread(target=audio_thread,
                      args=(cable_audio_queue, cable)).start()
-    # should alway be 2 channels (probably)
+    # should always be 2 channels (probably)
     with sounddevice.Stream(channels=2, device=[default_in, cable],
                             callback=callback):
         SoundboardApp(local_audio_queue, cable_audio_queue).run()
