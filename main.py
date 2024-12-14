@@ -88,13 +88,17 @@ if __name__ == "__main__":
     default_in, default_out, cable = get_devices()
     local_audio_queue = queue.Queue()
     cable_audio_queue = queue.Queue()
-    threading.Thread(target=audio_thread,
-                     args=(local_audio_queue, default_out)).start()
-    threading.Thread(target=audio_thread,
-                     args=(cable_audio_queue, cable)).start()
-    # should always be 2 channels (probably)
-    with sounddevice.Stream(channels=2, device=[default_in, cable],
-                            callback=callback):
-        SoundboardApp(local_audio_queue, cable_audio_queue).run()
-    local_audio_queue.put(False)
-    cable_audio_queue.put(False)
+    try:
+        threading.Thread(target=audio_thread,
+                         args=(local_audio_queue, default_out)).start()
+        threading.Thread(target=audio_thread,
+                         args=(cable_audio_queue, cable)).start()
+        # should always be 2 channels (probably)
+        with sounddevice.Stream(channels=1, device=[default_in, cable],
+                                callback=callback):
+            SoundboardApp(local_audio_queue, cable_audio_queue).run()
+    except Exception as excp:  # pylint:disable=broad-exception-caught
+        print(excp.with_traceback(None))
+    finally:
+        local_audio_queue.put(False)
+        cable_audio_queue.put(False)
