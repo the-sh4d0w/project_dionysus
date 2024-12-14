@@ -14,9 +14,9 @@ import utils.translate
 
 class SettingsScreen(textual.screen.Screen):
     """Class for the settings screen."""
-    TITLE = "Dionysus - Config"
+    TITLE = utils.translate.Text.translatable("settings.header")
     BINDINGS = [
-        ("s", "close", utils.translate.Text.translatable("config.footer.close"))
+        ("s", "close", utils.translate.Text.translatable("settings.footer.close"))
     ]
 
     def compose(self) -> textual.app.ComposeResult:
@@ -29,23 +29,23 @@ class SettingsScreen(textual.screen.Screen):
         with textual.containers.Vertical(id="config"):
             with textual.containers.Horizontal():
                 yield textual.widgets.Label(utils.translate.Text.translatable(
-                    "config.language.title"), classes="config_label")
+                    "settings.language.title"), classes="config_label")
                 yield textual.widgets.Select(languages, allow_blank=False,
                                              value=utils.config.CONFIG.language,
                                              id="language_select", classes="config_option")
             with textual.containers.Horizontal():
                 yield textual.widgets.Label(utils.translate.Text.translatable(
-                    "config.clock.title"), classes="config_label")
+                    "settings.clock.title"), classes="config_label")
                 yield textual.widgets.Switch(utils.config.CONFIG.show_clock,
                                              id="clock_switch", classes="config_option")
             with textual.containers.Horizontal():
                 yield textual.widgets.Label(utils.translate.Text.translatable(
-                    "config.emoji.title"), classes="config_label")
+                    "settings.emoji.title"), classes="config_label")
                 yield textual.widgets.Input(utils.config.CONFIG.default_emoji,
                                             id="emoji_input", classes="config_option")
             with textual.containers.Horizontal():
                 yield textual.widgets.Label(utils.translate.Text.translatable(
-                    "config.theme.title"), classes="config_label")
+                    "settings.theme.title"), classes="config_label")
                 yield textual.widgets.Select([(theme, theme)
                                               for theme in self.app.available_themes],
                                              allow_blank=False, value=self.app.theme,

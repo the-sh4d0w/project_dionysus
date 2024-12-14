@@ -12,7 +12,7 @@ import utils.translate
 
 class HelpScreen(textual.screen.Screen):
     """Class for the help screen."""
-    TITLE = "Dionysus - Help"
+    TITLE = utils.translate.Text.translatable("help.header")
     BINDINGS = [
         ("h", "close", utils.translate.Text.translatable("help.footer.close"))
     ]

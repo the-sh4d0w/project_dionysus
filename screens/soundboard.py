@@ -22,7 +22,7 @@ AUDIO_PATH = "audio/"
 
 class SoundboardScreen(textual.screen.Screen):
     """Class for the soundboard screen."""
-    TITLE = "Dionysus - Soundboard"
+    TITLE =  utils.translate.Text.translatable("soundboard.header")
     BINDINGS = [
         ("q", "quit",
          utils.translate.Text.translatable("soundboard.footer.quit")),
