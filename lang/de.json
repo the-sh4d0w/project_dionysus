@@ -11,7 +11,7 @@
     "settings.emoji.title": "Standard Emoji",
     "settings.input.title": "Eingabegerät",
     "settings.output.title": "Ausgabegerät",
-    "settings.virtual.title": "virtuelles Eingabegerät",
+    "settings.virtual.title": "virtuelles Ausgabegerät",
     "settings.footer.close": "Einstellungen schließen",
     "help.header": "Dionysus - Hilfe",
     "help.file_question": "Wie füge ich Audiodateien hinzu?",

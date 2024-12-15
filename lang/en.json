@@ -11,7 +11,7 @@
     "settings.emoji.title": "Default emoji",
     "settings.input.title": "Input device",
     "settings.output.title": "Output device",
-    "settings.virtual.title": "Virtual input device",
+    "settings.virtual.title": "Virtual output device",
     "settings.footer.close": "Close config",
     "help.header": "Dionysus - Help",
     "help.file_question": "How do I add audio files?",
