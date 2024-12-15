@@ -5,9 +5,31 @@ import typing
 
 import pydantic
 import pydantic_core
+import sounddevice
 
 CONFIG_PATH = "config/config.json"
 SOUNDS_PATH = "config/sounds.json"
+
+default_in: int
+default_out: int
+default_in, default_out = typing.cast(
+    tuple[int, int], sounddevice.default.device)
+
+
+def get_input_devices() -> dict[int, tuple[str, int]]:
+    """Get all input devices."""
+    devices: sounddevice.DeviceList = typing.cast(
+        sounddevice.DeviceList, sounddevice.query_devices())
+    return {device["index"]: (device["name"], device["max_input_channels"])
+            for device in devices if device["max_output_channels"] == 0}
+
+
+def get_output_devices() -> dict[int, tuple[str, int]]:
+    """Get all input devices."""
+    devices: sounddevice.DeviceList = typing.cast(
+        sounddevice.DeviceList, sounddevice.query_devices())
+    return {device["index"]: (device["name"], device["max_output_channels"])
+            for device in devices if device["max_input_channels"] == 0}
 
 
 class Sound(pydantic.BaseModel):
@@ -33,6 +55,9 @@ class Config(pydantic.BaseModel):
     show_clock: bool = False
     default_emoji: str = "🔊"
     theme: str = "textual-dark"
+    input_device: int = default_in
+    output_device: int = default_out
+    virtual_output_device: int = default_out
 
     @classmethod
     def load(cls) -> "Config":

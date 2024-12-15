@@ -48,7 +48,7 @@ class HelpScreen(textual.screen.Screen):
                     "help.sound_text"), classes="text")
             with textual.containers.Vertical(classes="faq"):
                 yield textual.widgets.Static(utils.translate.Text.translatable(
-                    "help.json_question"), classes="title")
+                    "help.json_question", SOUNDS_PATH=utils.config.SOUNDS_PATH), classes="title")
                 yield textual.widgets.Static(utils.translate.Text.translatable(
                     "help.json_text"), classes="text")
         yield textual.widgets.Footer()

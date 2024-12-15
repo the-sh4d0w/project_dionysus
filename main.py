@@ -2,7 +2,6 @@
 
 import threading
 import queue
-import typing
 
 import numpy
 import sounddevice
@@ -25,45 +24,22 @@ DEVICE_NAME = "CABLE Input MME"  # somehow matches correct device
 FILE_TYPES = (".mp3", ".wav", ".ogg")
 
 
-class NoCableError(Exception):
-    """Error to raise if VB-Audio Virtual Cable is not correctly installed."""
+def callback(indata: numpy.ndarray, outdata: numpy.ndarray, frames, time, status) \
+        -> None:  # pylint: disable=unused-argument
+    """Callback function."""
+    outdata[:] = indata
 
 
-def get_devices() -> tuple[int, int, int]:
-    """Get all devices.
-
-    Returns:
-        The default input, default output and CABLE Input device ids.
-    """
-    try:
-        return *typing.cast(tuple[int, int], sounddevice.default.device), \
-            typing.cast(dict[str, int], sounddevice.query_devices(
-                DEVICE_NAME))["index"]
-    except ValueError as exc:
-        raise NoCableError(
-            "you don't have VB-Audio Virtual Cable installed") from exc
-
-
-def audio_thread(audio_queue: queue.Queue, device: int) -> None:
-    """Function for local audio output thread.
+def audio_thread(audio_queue: queue.Queue) -> None:
+    """Function for audio threads. Waits for audio then plays on device.
 
     Arguments:
-        - audio_queue: queue to get audio data from.
-        - device: the id of the playback device.
+        - audio_queue: the queue to get the audio from.
     """
-    while True:
-        if data := audio_queue.get():
-            audio_data, samplerate = data
-            sounddevice.play(data=audio_data, samplerate=samplerate,
-                             device=device, blocking=True)
-        else:
-            break
-
-
-def callback(indata: numpy.ndarray, outdata: numpy.ndarray,
-             frames, time, status) -> None:  # pylint: disable=unused-argument
-    """Callback function. The type of time should actually be CData."""
-    outdata[:] = indata
+    while (data := audio_queue.get()):
+        audio_data, samplerate, device = data
+        sounddevice.play(data=audio_data, samplerate=samplerate,
+                         device=device, blocking=True)
 
 
 class SoundboardApp(textual.app.App):
@@ -72,12 +48,12 @@ class SoundboardApp(textual.app.App):
     TITLE = "Dionysus"
     CSS_PATH = "./config/style.tcss"
 
-    def __init__(self, local_queue: queue.Queue, cable_queue: queue.Queue) -> None:
+    def __init__(self, local_audio_queue: queue.Queue, virtual_audio_queue: queue.Queue) -> None:
         """Initialize the soundboard app."""
         super().__init__()
         self.theme = utils.config.CONFIG.theme
-        self.local_queue: queue.Queue = local_queue
-        self.cable_queue: queue.Queue = cable_queue
+        self.local_audio_queue: queue.Queue = local_audio_queue
+        self.virtual_audio_queue: queue.Queue = virtual_audio_queue
 
     def on_mount(self) -> None:
         """Do stuff on mount."""
@@ -85,19 +61,20 @@ class SoundboardApp(textual.app.App):
 
 
 if __name__ == "__main__":
-    default_in, default_out, cable = get_devices()
-    local_audio_queue = queue.Queue()
-    cable_audio_queue = queue.Queue()
+    # need to play two audios at the same time
+    local_queue = queue.Queue()
+    virtual_queue = queue.Queue()
     try:
-        threading.Thread(target=audio_thread,
-                         args=(local_audio_queue, default_out)).start()
-        threading.Thread(target=audio_thread,
-                         args=(cable_audio_queue, cable)).start()
-        with sounddevice.Stream(channels=1, device=[default_in, cable],
+        threading.Thread(target=audio_thread, args=(local_queue,),
+                         daemon=True).start()
+        threading.Thread(target=audio_thread, args=(virtual_queue,),
+                         daemon=True).start()
+        with sounddevice.Stream(device=[utils.config.CONFIG.input_device,
+                                        utils.config.CONFIG.virtual_output_device],
                                 callback=callback):
-            SoundboardApp(local_audio_queue, cable_audio_queue).run()
+            SoundboardApp(local_queue, virtual_queue).run()
     except Exception as excp:  # pylint:disable=broad-exception-caught
-        print(excp.with_traceback(None))
+        print(excp)
     finally:
-        local_audio_queue.put(False)
-        cable_audio_queue.put(False)
+        local_queue.put(False)
+        virtual_queue.put(False)

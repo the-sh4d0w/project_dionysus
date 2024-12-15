@@ -38,8 +38,10 @@ class SoundButton(textual.widgets.Button):
         try:
             self.app: main.SoundboardApp
             data, samplerate = soundfile.read(file=self.file)
-            self.app.local_queue.put((data, samplerate))
-            self.app.cable_queue.put((data, samplerate))
+            self.app.local_audio_queue.put((data, samplerate,
+                                            utils.config.CONFIG.output_device))
+            self.app.virtual_audio_queue.put((data, samplerate,
+                                              utils.config.CONFIG.virtual_output_device))
         except soundfile.LibsndfileError as exc:
             self.app.notify(message=exc.error_string,
                             title=exc.prefix.removesuffix(": "),

@@ -1,5 +1,5 @@
 {
-    "soundboard.header": "Dionysus",
+    "soundboard.header": "Dionysus - Soundboard",
     "soundboard.footer.quit": "Quit",
     "soundboard.footer.settings": "Open settings",
     "soundboard.footer.help": "Open help",
@@ -9,6 +9,9 @@
     "settings.language.title": "Language",
     "settings.clock.title": "Show clock",
     "settings.emoji.title": "Default emoji",
+    "settings.input.title": "Input device",
+    "settings.output.title": "Output device",
+    "settings.virtual.title": "Virtual input device",
     "settings.footer.close": "Close config",
     "help.header": "Dionysus - Help",
     "help.file_question": "How do I add audio files?",
@@ -19,8 +22,11 @@
     "help.name_text": "Add an entry in '{SOUNDS_PATH}'.\nIf your file is named 'example.mp3' the entry would look like this:\n\"example.mp3\": {{\"name\": \"Example name\"}}",
     "help.sound_question": "How do I play sounds?",
     "help.sound_text": "Just click on the buttons.",
-    "help.json_question": "I don't understand the sounds file.",
+    "help.json_question": "I don't understand the '{SOUNDS_PATH}' file.",
     "help.json_text": "https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON",
     "help.footer.close": "Close help",
+    "exit.question": "You need to restart to apply changes to audio devices. Do you want to exit now?",
+    "exit.yes": "Yes",
+    "exit.no": "No",
     "notify.warning": "Something went wrong"
 }
