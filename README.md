@@ -1,5 +1,5 @@
-![Python versions](https://img.shields.io/badge/Python-3.10|3.11|3.12|3.13-blue)
-![OS support](https://img.shields.io/badge/OS-Windows-red)
+![Python versions](https://img.shields.io/badge/Python-3.10_|_3.11_|_3.12_|_3.13-blue)
+![OS support](https://img.shields.io/badge/OS-Windows_Linux_macOS-red)
 ![Soundboard screen with catppuccino-mocha theme](images/dionysus_soundboard_catppuccin-mocha.png)
 
 # Dionysus
@@ -8,7 +8,7 @@ A simple soundboard in the terminal. Add your own sound files and play them thro
 This is a Terminal User Interface (TUI) made with [Textual](https://github.com/textualize/textual/).
 
 ## Installation & Usage
-This program needs [VB-CABLE](https://vb-audio.com/Cable/) to work. Windows Terminal works well for Textual apps and is recommended.
+You will need a virtual output device that redirects audio to a virtual input device. [VB-CABLE](https://vb-audio.com/Cable/) works for Windows and macOS, if you're on Linux you can probably figure it out on your own.
 
 Clone the repository: `git clone https://github.com/the-sh4d0w/project_dionysus.git`
 
