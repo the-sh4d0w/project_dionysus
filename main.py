@@ -4,6 +4,7 @@ import threading
 import queue
 
 import numpy
+import rich
 import sounddevice
 import textual
 import textual.app
@@ -19,6 +20,7 @@ import textual.widgets
 
 import screens.soundboard
 import utils.config
+import utils.translate
 
 DEVICE_NAME = "CABLE Input MME"  # somehow matches correct device
 FILE_TYPES = (".mp3", ".wav", ".ogg")
@@ -75,6 +77,9 @@ if __name__ == "__main__":
             SoundboardApp(local_queue, virtual_queue).run()
     except Exception as excp:  # pylint:disable=broad-exception-caught
         print(excp)
+        rich.print(
+            f"[red]{utils.translate.Text.translatable('error.audio_devices')}")
+        utils.config.CONFIG.store_reset()
     finally:
         local_queue.put(False)
         virtual_queue.put(False)

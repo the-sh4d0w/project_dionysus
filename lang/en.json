@@ -28,5 +28,6 @@
     "exit.question": "You need to restart to apply changes to audio devices. Do you want to exit now?",
     "exit.yes": "Yes",
     "exit.no": "No",
-    "notify.warning": "Something went wrong"
+    "notify.warning": "Something went wrong",
+    "error.audio_devices": "An error occurred. Audio device selection reset to default."
 }

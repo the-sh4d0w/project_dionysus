@@ -28,5 +28,6 @@
     "exit.question": "Du musst neu starten, um die Änderungen für die Audiogeräte zu übernehmen. Möchtest du jetzt beenden?",
     "exit.yes": "Ja",
     "exit.no": "Nein",
-    "notify.warning": "Etwas ist schiefgelaufen"
+    "notify.warning": "Etwas ist schiefgelaufen",
+    "error.audio_devices": "Ein Fehler ist aufgetreten. Die Auswahl des Audiogeräts wurde auf die Standardeinstellungen zurückgesetzt."
 }

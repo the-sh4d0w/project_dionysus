@@ -70,6 +70,12 @@ class Config(pydantic.BaseModel):
         pathlib.Path(CONFIG_PATH).write_text(self.model_dump_json(),
                                              encoding="utf-8")
 
+    def store_reset(self) -> None:
+        """Store the config in a file and reset audio device selection by excluding them."""
+        pathlib.Path(CONFIG_PATH).write_text(self.model_dump_json(
+            exclude={"input_device", "output_device", "virtual_output_device"}),
+            encoding="utf-8")
+
 
 CONFIG = Config.load()
 SOUNDS = Sounds.load().root
